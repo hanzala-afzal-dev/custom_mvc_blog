@@ -11,6 +11,8 @@ require dirname(__DIR__) . '/vendor/autoload.php';
 
 $projectRoot = dirname(__DIR__);
 
+define('ROOT_DIR', $projectRoot);
+
 /**
  * Load .env (DB creds etc.)
  */
