@@ -2,9 +2,8 @@
 
 declare(strict_types=1);
 
-use Traits\EscapeString;
 use Traits\Session;
-use Traits\Csrf;
+use Traits\Permission;
 
 Session::start();
 
@@ -19,15 +18,12 @@ Session::start();
 <body>
 <header style="padding: 12px; border-bottom: 1px solid #ddd;">
     <nav>
-        <a href="/posts">Posts</a>
-
-        <?php if (is_int(Session::get('auth_user_id'))): ?>
-            <form action="/logout" method="post" style="display:inline;">
-                <input type="hidden" name="_csrf" value="<?= EscapeString::html(Csrf::token()) ?>">
-                <button type="submit">Logout</button>
-            </form>
+        <?php if (Permission::isAuthenticated()): ?>
+            <a href="/posts">Posts</a>
+            <a href="/logout"><button type="submit">Logout</button></a>
         <?php else: ?>
             <a href="/login">Login</a>
+            <a href="/registration" style="margin-left: 8px;">Register</a>
         <?php endif; ?>
     </nav>
 </header>
