@@ -48,7 +48,7 @@ trait Csrf
             return false;
         }
 
-        return hash_equals($tokenFromRequest, $tokenFromRequest);
+        return hash_equals($tokenFromRequest, $tokenFromSession);
     }
 
     private function hasCsrfToken(ServerRequestInterface $request): bool
