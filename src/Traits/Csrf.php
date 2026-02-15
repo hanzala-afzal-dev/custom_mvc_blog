@@ -3,7 +3,6 @@
 namespace Traits;
 
 use Exception;
-use Nyholm\Psr7\Request;
 use Psr\Http\Message\ServerRequestInterface;
 
 trait Csrf
