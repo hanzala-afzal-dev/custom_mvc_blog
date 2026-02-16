@@ -88,8 +88,25 @@ final class Post
         $statement->bindValue(':id', $id, PDO::PARAM_INT);
         $statement->bindValue(':title', $title);
         $statement->bindValue(':body', $body);
+        $statement->execute();
 
-        return $statement->execute();
+        return $statement->rowCount() > 0;
+    }
+
+    public function updateByOwner(int $id, int $ownerId, string $title, string $body): bool
+    {
+        $sql = "UPDATE {$this->table}
+                SET title = :title, body = :body, updated_at = NOW()
+                WHERE id = :id AND user_id = :owner_id";
+
+        $statement = $this->pdo->prepare($sql);
+        $statement->bindValue(':id', $id, PDO::PARAM_INT);
+        $statement->bindValue(':owner_id', $ownerId, PDO::PARAM_INT);
+        $statement->bindValue(':title', $title);
+        $statement->bindValue(':body', $body);
+        $statement->execute();
+
+        return $statement->rowCount() > 0;
     }
 
     public function delete(int $id): bool
@@ -98,7 +115,20 @@ final class Post
 
         $statement = $this->pdo->prepare($sql);
         $statement->bindValue(':id', $id, PDO::PARAM_INT);
+        $statement->execute();
 
-        return $statement->execute();
+        return $statement->rowCount() > 0;
+    }
+
+    public function deleteByOwner(int $id, int $ownerId): bool
+    {
+        $sql = "DELETE FROM {$this->table} WHERE id = :id AND user_id = :owner_id";
+
+        $statement = $this->pdo->prepare($sql);
+        $statement->bindValue(':id', $id, PDO::PARAM_INT);
+        $statement->bindValue(':owner_id', $ownerId, PDO::PARAM_INT);
+        $statement->execute();
+
+        return $statement->rowCount() > 0;
     }
 }

@@ -79,14 +79,22 @@ final class PostService
         return $this->post->create($userId, $title, $body);
     }
 
-    public function updatePost(int $id, string $title, string $body): bool
+    public function updatePostForUser(int $postId, int $authUserId, string $authRole, string $title, string $body): bool
     {
-        return $this->post->update($id, $title, $body);
+        if ($authRole === 'admin') {
+            return $this->post->update($postId, $title, $body);
+        }
+
+        return $this->post->updateByOwner($postId, $authUserId, $title, $body);
     }
 
-    public function deletePost(int $id): bool
+    public function deletePostForUser(int $postId, int $authUserId, string $authRole): bool
     {
-        return $this->post->delete($id);
+        if ($authRole === 'admin') {
+            return $this->post->delete($postId);
+        }
+
+        return $this->post->deleteByOwner($postId, $authUserId);
     }
 
     /**

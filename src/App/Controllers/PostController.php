@@ -188,7 +188,18 @@ final class PostController
             return new Response(302, ['Location' => '/posts/' . $id . '/edit']);
         }
 
-        $this->postService->updatePost($id, $validation['title'], $validation['body']);
+        $updated = $this->postService->updatePostForUser(
+            $id,
+            (int) Session::get('auth_user_id', 0),
+            (string) Session::get('auth_role', 'normal'),
+            $validation['title'],
+            $validation['body']
+        );
+
+        if (!$updated) {
+            Session::set('flash_error', 'You can only update your own posts.');
+            return new Response(302, ['Location' => '/posts']);
+        }
 
         Session::set('flash_success', 'Post updated successfully.');
 
@@ -221,7 +232,17 @@ final class PostController
             return new Response(302, ['Location' => '/posts']);
         }
 
-        $this->postService->deletePost($id);
+        $deleted = $this->postService->deletePostForUser(
+            $id,
+            (int) Session::get('auth_user_id', 0),
+            (string) Session::get('auth_role', 'normal')
+        );
+
+        if (!$deleted) {
+            Session::set('flash_error', 'You can only delete your own posts.');
+            return new Response(302, ['Location' => '/posts']);
+        }
+
         Session::set('flash_success', 'Post deleted successfully.');
 
         return new Response(302, ['Location' => '/posts']);
