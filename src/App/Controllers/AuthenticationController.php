@@ -25,7 +25,7 @@ class AuthenticationController
      * Controller to render login page
      * @throws \Exception
      */
-    public function viewLogin(): ResponseInterface
+    public function viewLogin(ServerRequestInterface $request): ResponseInterface
     {
         Session::start();
 
@@ -74,7 +74,7 @@ class AuthenticationController
      * Controller to render registration page
      * @throws \Exception
      */
-    public function viewRegistration(): ResponseInterface
+    public function viewRegistration(ServerRequestInterface $request): ResponseInterface
     {
         Session::start();
 
@@ -132,7 +132,7 @@ class AuthenticationController
 
     }
 
-    public function logout(): ResponseInterface
+    public function logout(ServerRequestInterface $request): ResponseInterface
     {
 
         Session::start();
