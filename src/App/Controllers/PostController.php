@@ -24,6 +24,7 @@ final class PostController
 
     public function __construct()
     {
+        Session::start();
         $this->postService = new PostService();
     }
 
