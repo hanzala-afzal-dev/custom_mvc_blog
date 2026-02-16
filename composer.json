@@ -17,7 +17,8 @@
       "Database\\": "src/Database/",
       "Traits\\": "src/Traits/",
       "Helpers\\": "src/Helpers/",
-      "Exceptions\\": "src/Exceptions"
+      "Exceptions\\": "src/Exceptions",
+      "Tests\\" : "tests/unit"
     }
   },
   "autoload-dev": {
@@ -26,10 +27,13 @@
     }
   },
   "scripts": {
-    "test": "phpunit",
+    "test": "vendor/bin/phpunit",
     "phpcs": "phpcs --standard=PSR12 src tests",
     "phpcbf": "phpcbf --standard=PSR12 src tests",
     "db:install": "php setup-db/install.php",
     "db:drop" : "php setup-db/uninstall.php"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^11.5"
   }
 }
