@@ -55,6 +55,11 @@ class AuthenticationController
         }
 
         $formData = $request->getParsedBody();
+        if (!is_array($formData)) {
+            Session::set('flash_error', 'Invalid form submission.');
+            return new Response(302, ['Location' => '/login']);
+        }
+
         if (empty($formData['email']) || empty($formData['password'])) {
             Session::set('flash_error', 'Email or password is required.');
             return new Response(302, ['Location' => '/login']);
@@ -97,35 +102,39 @@ class AuthenticationController
     {
         if (!$this->validateCsrf($request)) {
             Session::set('flash_error', 'No CSRF Token found in request');
-            return new Response(302, ['Location' => '/register']);
+            return new Response(302, ['Location' => '/registration']);
         }
 
         $formData = $request->getParsedBody();
+        if (!is_array($formData)) {
+            Session::set('flash_error', 'Invalid form submission.');
+            return new Response(302, ['Location' => '/registration']);
+        }
 
 
-        if (empty(trim($formData['name'])) || empty(trim($formData['email'])) || empty(trim($formData['password']))) {
+        if (empty(trim((string) ($formData['name'] ?? ''))) || empty(trim((string) ($formData['email'] ?? ''))) || empty(trim((string) ($formData['password'] ?? '')))) {
             Session::set('flash_error', 'Name, email and password are required.');
-            return new Response(302, ['Location' => '/register']);
+            return new Response(302, ['Location' => '/registration']);
         }
 
-        if (!filter_var($formData['email'], FILTER_VALIDATE_EMAIL)) {
+        if (!filter_var((string) $formData['email'], FILTER_VALIDATE_EMAIL)) {
             Session::set('flash_error', 'Please provide a valid email address.');
-            return new Response(302, ['Location' => '/register']);
+            return new Response(302, ['Location' => '/registration']);
         }
 
-        if (strlen($formData['password']) < 8) {
+        if (strlen((string) $formData['password']) < 8) {
             Session::set('flash_error', 'Password must be at least 8 characters long.');
-            return new Response(302, ['Location' => '/register']);
+            return new Response(302, ['Location' => '/registration']);
         }
 
-        if ($formData['password'] !== $formData['password_confirmation']) {
+        if ((string) $formData['password'] !== (string) ($formData['password_confirmation'] ?? '')) {
             Session::set('flash_error', 'Password confirmation does not match.');
-            return new Response(302, ['Location' => '/register']);
+            return new Response(302, ['Location' => '/registration']);
         }
 
-        if (!(new AuthService())->register($formData['name'], $formData['email'], $formData['password'])) {
+        if (!(new AuthService())->register((string) $formData['name'], (string) $formData['email'], (string) $formData['password'])) {
             Session::set('flash_error', 'Email is already in use.');
-            return new Response(302, ['Location' => '/register']);
+            return new Response(302, ['Location' => '/registration']);
         }
 
         return new Response(302, ['Location' => '/login']);

@@ -2,7 +2,6 @@
 
 namespace Traits;
 
-use Exception;
 use Psr\Http\Message\ServerRequestInterface;
 
 trait Csrf
@@ -25,13 +24,10 @@ trait Csrf
         return $token;
     }
 
-    /**
-     * @throws Exception
-     */
     public function validateCsrf(ServerRequestInterface $request): bool
     {
-        if(!$this->hasCsrfToken($request)) {
-            throw new Exception('Csrf token not set. Reload Page');
+        if (!$this->hasCsrfToken($request)) {
+            return false;
         }
 
         Session::start();
@@ -52,7 +48,8 @@ trait Csrf
 
     private function hasCsrfToken(ServerRequestInterface $request): bool
     {
-        if (empty($request->getParsedBody()['_csrf'])) {
+        $parsedBody = $request->getParsedBody();
+        if (!is_array($parsedBody) || empty($parsedBody['_csrf'])) {
             return false;
         }
 
