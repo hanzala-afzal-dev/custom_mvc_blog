@@ -16,12 +16,15 @@ final class Router
      */
     private array $routes;
 
+    private Dispatcher $dispatcher;
+
     /**
      * @param array<int, array{method:string, path:string, handler:array{0:class-string,1:string}}> $routes
      */
     public function __construct(array $routes)
     {
         $this->routes = $routes;
+        $this->dispatcher = $this->buildDispatcher();
     }
 
     /**
@@ -30,8 +33,14 @@ final class Router
     public function dispatch(string $method, string $uri): array
     {
         $path = (string) (parse_url($uri, PHP_URL_PATH) ?? '/');
+        $routeInfo = $this->dispatcher->dispatch($method, $path);
 
-        $dispatcher = simpleDispatcher(function (RouteCollector $collector): void {
+        return $this->buildDispatchResult($routeInfo);
+    }
+
+    private function buildDispatcher(): Dispatcher
+    {
+        return simpleDispatcher(function (RouteCollector $collector): void {
             foreach ($this->routes as $route) {
                 $collector->addRoute(
                     $route['method'],
@@ -40,9 +49,14 @@ final class Router
                 );
             }
         });
+    }
 
-        $routeInfo = $dispatcher->dispatch($method, $path);
-
+    /**
+     * @param array{0:int, 1?:array{0:class-string,1:string}, 2?:array<string, string>} $routeInfo
+     * @return array{status:int, handler?:array{0:class-string,1:string}, variables?:array<string, string>}
+     */
+    private function buildDispatchResult(array $routeInfo): array
+    {
         if ($routeInfo[0] === Dispatcher::NOT_FOUND) {
             return ['status' => Dispatcher::NOT_FOUND];
         }
